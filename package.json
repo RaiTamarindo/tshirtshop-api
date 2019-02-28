@@ -1,0 +1,24 @@
+{
+  "name": "tshirtshop-api",
+  "version": "1.0.0",
+  "description": "Api Software of TShirt Store proposed on Turing test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaiTamarindo/tshirtshop-api.git"
+  },
+  "keywords": [
+    "api",
+    "ecommerce",
+    "tshirt"
+  ],
+  "author": "Raí Tamarindo",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/RaiTamarindo/tshirtshop-api/issues"
+  },
+  "homepage": "https://github.com/RaiTamarindo/tshirtshop-api#readme"
+}
