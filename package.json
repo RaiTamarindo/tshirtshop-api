@@ -26,6 +26,7 @@
     },
     "homepage": "https://github.com/RaiTamarindo/tshirtshop-api#readme",
     "devDependencies": {
+        "@types/node": "^11.9.6",
         "rimraf": "^2.6.3",
         "tslint": "^5.13.0",
         "tslint-microsoft-contrib": "^6.0.0",
