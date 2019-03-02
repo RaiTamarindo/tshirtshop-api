@@ -4,11 +4,15 @@
     "description": "Api Software of TShirt Store proposed on Turing test",
     "scripts": {
         "start": "npm run build && node build/src/main",
-        "clean": "rimraf build",
+        "clean": "rimraf coverage build",
         "build": "tsc -p tsconfig.json",
         "build:prod": "tsc -p tsconfig.release.json",
         "watch": "tsc -w -p tsconfig.json",
-        "lint": "tslint -t stylish --project \"tsconfig.json\""
+        "lint": "tslint -t stylish --project \"tsconfig.json\"",
+        "pretest": "npm run lint",
+        "test": "npm run test-only",
+        "test-only": "jest --coverage",
+        "test:watch": "jest --watch"
     },
     "repository": {
         "type": "git",
@@ -26,7 +30,9 @@
     },
     "homepage": "https://github.com/RaiTamarindo/tshirtshop-api#readme",
     "devDependencies": {
+        "@types/jest": "^24.0.9",
         "@types/node": "^11.9.6",
+        "jest": "^24.1.0",
         "rimraf": "^2.6.3",
         "tslint": "^5.13.0",
         "tslint-microsoft-contrib": "^6.0.0",
