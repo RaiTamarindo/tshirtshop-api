@@ -1,24 +1,47 @@
 {
-  "name": "tshirtshop-api",
-  "version": "1.0.0",
-  "description": "Api Software of TShirt Store proposed on Turing test",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RaiTamarindo/tshirtshop-api.git"
-  },
-  "keywords": [
-    "api",
-    "ecommerce",
-    "tshirt"
-  ],
-  "author": "Raí Tamarindo",
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/RaiTamarindo/tshirtshop-api/issues"
-  },
-  "homepage": "https://github.com/RaiTamarindo/tshirtshop-api#readme"
+    "name": "tshirtshop-api",
+    "version": "1.0.0",
+    "description": "Api Software of TShirt Store proposed on Turing test",
+    "scripts": {
+        "start": "npm run build && node build/src/main",
+        "clean": "rimraf coverage build",
+        "build": "tsc -p tsconfig.json",
+        "build:prod": "tsc -p tsconfig.release.json",
+        "watch": "tsc -w -p tsconfig.json",
+        "lint": "tslint -t stylish --project \"tsconfig.json\"",
+        "pretest": "npm run lint",
+        "test": "npm run test-only",
+        "test-only": "jest --coverage",
+        "test:watch": "jest --watch"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RaiTamarindo/tshirtshop-api.git"
+    },
+    "keywords": [
+        "api",
+        "ecommerce",
+        "tshirt"
+    ],
+    "author": "Raí Tamarindo",
+    "license": "UNLICENSED",
+    "bugs": {
+        "url": "https://github.com/RaiTamarindo/tshirtshop-api/issues"
+    },
+    "homepage": "https://github.com/RaiTamarindo/tshirtshop-api#readme",
+    "devDependencies": {
+        "@types/jest": "^24.0.9",
+        "@types/node": "^11.9.6",
+        "jest": "^24.1.0",
+        "rimraf": "^2.6.3",
+        "tslint": "^5.13.0",
+        "tslint-microsoft-contrib": "^6.0.0",
+        "typescript": "^3.3.3333"
+    },
+    "dependencies": {
+        "tslib": "^1.9.3"
+    },
+    "engines": {
+        "node": ">=10.12"
+    }
 }
