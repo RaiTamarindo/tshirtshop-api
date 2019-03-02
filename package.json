@@ -39,7 +39,9 @@
         "typescript": "^3.3.3333"
     },
     "dependencies": {
-        "tslib": "^1.9.3"
+        "mysql": "^2.16.0",
+        "tslib": "^1.9.3",
+        "typeorm": "^0.2.14"
     },
     "engines": {
         "node": ">=10.12"
