@@ -15,6 +15,7 @@
         "no-multiline-string": false,
         "no-any": false,
         "no-unsafe-any": false,
+        "no-null-keyword": false,
         "no-submodule-imports": false,
         "prefer-type-cast": false,
         "strict-boolean-expressions": false,
