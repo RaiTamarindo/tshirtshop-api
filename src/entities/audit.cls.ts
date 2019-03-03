@@ -3,7 +3,6 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GenericEntity } from './entity.cls';
 import { Order } from './order.cls';
