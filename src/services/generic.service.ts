@@ -45,7 +45,7 @@ export abstract class GenericService<T extends GenericEntity, F extends GenericF
      * @param id Entity id
      * @param user Context user
      */
-    public async findById(id: string, user?: User): Promise<T> {
+    public async findById(id: number, user?: User): Promise<T> {
         const entity: T = await this.getRepository()
             .findOne(id);
         await (!user ? Promise.resolve() : this.wrapContext(user, entity));
