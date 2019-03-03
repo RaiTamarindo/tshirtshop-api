@@ -6,10 +6,22 @@ import {
     CREATED,
     OK,
 } from 'http-status';
-import { injectable } from 'inversify';
-import { User } from '../entities';
-import { GenericEntity } from '../entities/entity.cls';
-import { GenericFilter } from '../entities/filters/generic.filter';
+import {
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
+    Req,
+    Res,
+    UseBefore,
+} from 'routing-controllers';
+import {
+    GenericEntity,
+    User,
+} from '../entities';
+import { GenericFilter } from '../entities/filters';
+import { entityLoaderMiddleware } from '../middlewares';
 import {
     GenericService,
     IFindResult,
@@ -30,102 +42,79 @@ export interface IEntityRequest<T extends GenericEntity> extends IAPIRequest {
 /**
  * Generic entity controller
  */
-@injectable()
 export abstract class GenericController<T extends GenericEntity, F extends GenericFilter<T>> {
 
-    public load = (req: IEntityRequest<T>, _res: Response, next: (error?: any) => void, id: number) => {
-        this.doLoad(id)
-            .then((entity: T) => {
-                req.entity = entity;
-                next();
-            })
-            .catch(next);
-    }
-
-    public read = (req: IEntityRequest<T>, res: Response) => {
-        res.status(OK)
-            .json(req.entity);
-    }
-
-    public list = (req: IEntityRequest<T>, res: Response, next: (error?: any) => void) => {
-        const filter: F = GenericFilter.parse<T, F>(this.getFilterType(), req.query);
-        this.doList(filter, req.user)
-            .then((result: IFindResult<T, F>) => res.status(OK)
-                .json(result))
-            .catch(next);
-    }
-
-    public create = (req: IEntityRequest<T>, res: Response, next: (error?: any) => void) => {
-        this.doCreate(req.body, req.user)
-            .then((createdEntities: T[]) => res.status(CREATED)
-                .json(createdEntities))
-            .catch(next);
-    }
-
-    public update = (req: IEntityRequest<T>, res: Response, next: (error?: any) => void) => {
-        this.doUpdate(req.entity.id, req.body, req.user)
-            .then((updatedEntity: T) => res.status(OK)
-                .json(updatedEntity))
-            .catch(next);
-    }
-
-    public remove = (req: IEntityRequest<T>, res: Response, next: (error?: any) => void) => {
-        this.doRemove(req.entity, req.user)
-            .then(() => res.status(OK)
-                .send())
-            .catch(next);
-    }
-
     /**
-     * Loads an entity
-     * @param id Id of entity
+     * Retrieves an entity by its id
+     * @param req Http request
+     * @param res Http response
      */
-    protected doLoad(id: number): Promise<T> {
-        return this.getService()
-            .findById(id);
+    @Get('/:id')
+    @UseBefore(entityLoaderMiddleware(this.getService()))
+    public read(@Req() req: IEntityRequest<T>, @Res() res: Response): Response {
+        return res.status(OK)
+            .json(req.entity);
     }
 
     /**
      * List entities by filter
-     * @param filter Entity filter
-     * @param user Context user
+     * @param req Http request
+     * @param res Http response
      */
-    protected doList(filter: F, user?: User): Promise<IFindResult<T, F>> {
-        return this.getService()
-            .findAndCount(filter, user);
+    @Get('/')
+    public async list(@Req() req: IAPIRequest, @Res() res: Response): Promise<Response> {
+        const filter: F = GenericFilter.parse<T, F>(this.getFilterType(), req.query);
+        const result: IFindResult<T, F> = await this.getService()
+            .findAndCount(filter, req.user);
+
+        return res.status(OK)
+            .json(result);
     }
 
     /**
      * Creates one or more entities
-     * @param entity Entity or entities to create
-     * @param user Context user
+     * @param req Http request
+     * @param res Http response
      */
-    protected doCreate(entity: T | T[], user?: User): Promise<T[]> {
-        return this.getService()
-            .create(entity, user);
+    @Post('/')
+    public async create(@Req() req: IAPIRequest, @Res() res: Response): Promise<Response> {
+        const createdEntities: T[] = await this.getService()
+            .create(req.body, req.user);
+
+        return res.status(CREATED)
+            .json(createdEntities);
     }
 
     /**
      * Updates an entity
-     * @param id Id of entity
-     * @param entity Entity to update
-     * @param user Context user
+     * @param req Http request
+     * @param res Http response
+     * @param id Entity id
      */
-    protected doUpdate(id: number, entity: T, user?: User): Promise<T> {
-        entity.id = id;
+    @Put('/:id')
+    @UseBefore(entityLoaderMiddleware(this.getService()))
+    public async update(@Req() req: IEntityRequest<T>, @Res() res: Response, @Param('id') id: number): Promise<Response> {
+        const entity: T = { ...req.body, id: id };
+        const updatedEntity: T = await this.getService()
+            .update(entity, req.user);
 
-        return this.getService()
-            .update(entity, user);
+        return res.status(OK)
+            .json(updatedEntity);
     }
 
     /**
-     * Removes an entity
-     * @param entity Entity to remove
-     * @param user Context user
+     * Removes an entity by its id
+     * @param req Http request
+     * @param res Http response
      */
-    protected doRemove(entity: T, user?: User): Promise<T[]> {
-        return this.getService()
-            .remove(entity, user);
+    @Delete('/:id')
+    @UseBefore(entityLoaderMiddleware(this.getService()))
+    public async remove(@Req() req: IEntityRequest<T>, @Res() res: Response) {
+        await this.getService()
+            .remove(req.entity, req.user);
+
+        return res.status(OK)
+            .send();
     }
 
     /**
