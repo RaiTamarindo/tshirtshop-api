@@ -1,4 +1,7 @@
-import { FindManyOptions } from 'typeorm';
+import {
+    FindConditions,
+    FindManyOptions,
+} from 'typeorm';
 import { GenericEntity } from '../entity.cls';
 
 /**
@@ -56,15 +59,16 @@ export abstract class GenericFilter<T extends GenericEntity> {
     }
 
     public getOptions(): FindManyOptions<T> {
-        const options: FindManyOptions<T> = { where: {} };
+        const options: FindManyOptions<T> = {};
         if (!!this.limit) {
             options.skip = (this.page || 0) * this.limit;
             options.take = this.limit;
         }
+        options.where = this.getConditions();
 
-        return this.attachConditions(options);
+        return options;
     }
 
-    protected abstract attachConditions(options: FindManyOptions<T>): FindManyOptions<T>;
+    protected abstract getConditions(): FindConditions<T>;
 
 }
