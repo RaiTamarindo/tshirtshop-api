@@ -4,6 +4,9 @@
         "outDir": "build",
         "target": "es6",
         "module": "commonjs",
+        "types": [
+            "reflect-metadata"
+        ],
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "allowJs": true,

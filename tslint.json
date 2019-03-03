@@ -14,8 +14,10 @@
         "no-suspicious-comment": false,
         "no-multiline-string": false,
         "no-any": false,
+        "no-unsafe-any": false,
         "no-submodule-imports": false,
         "prefer-type-cast": false,
+        "strict-boolean-expressions": false,
         "trailing-comma": [
             true,
             {
