@@ -9,10 +9,8 @@ export interface IDatabaseConfig {
 }
 
 export interface IJWTConfig {
-    privateKey: string;
-    publicKey: string;
-    bearerExp?: number;
-    refreshExp?: number;
+    secret: string;
+    expiration?: number;
 }
 
 export namespace AppConfig {
@@ -20,8 +18,7 @@ export namespace AppConfig {
     export const getDatabase = (): IDatabaseConfig => Config.get('database');
     export const getJWT = (): IJWTConfig => {
         const jwtConfig = Config.get('jwt');
-        jwtConfig.bearerExp = parseInt(jwtConfig.bearerExp, 10);
-        jwtConfig.refreshExp = parseInt(jwtConfig.refreshExp, 10);
+        jwtConfig.expiration = parseInt(jwtConfig.expiration, 10);
 
         return jwtConfig;
     };
