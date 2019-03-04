@@ -9,6 +9,7 @@ import { UserController } from './controllers';
 import {
     ErrorHandlerMiddleware,
     ServiceNotFoundMiddleware,
+    SetupCheckerMiddleware,
 } from './middlewares';
 
 /**
@@ -37,6 +38,7 @@ export class ServerApp {
             routePrefix: '/api',
             controllers: [UserController],
             middlewares: [
+                SetupCheckerMiddleware,
                 ServiceNotFoundMiddleware,
                 ErrorHandlerMiddleware,
             ],
