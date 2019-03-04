@@ -8,13 +8,18 @@ import {
     Put,
     Req,
     Res,
+    UseBefore,
 } from 'routing-controllers';
-import { User } from '../entities';
-import { UserFilter } from '../entities/filters';
 import {
-    container,
-    // TYPE,
-} from '../inversify.config';
+    User,
+    UserRole,
+} from '../entities';
+import { UserFilter } from '../entities/filters';
+import { container } from '../inversify.config';
+import {
+    AuthenticatorMiddleware,
+    authorizerMiddleWare,
+} from '../middlewares';
 import { UserService } from '../services';
 import {
     GenericController,
@@ -25,6 +30,8 @@ import {
  * User controller class
  */
 @Controller('/users')
+@UseBefore(authorizerMiddleWare([UserRole.ADMIN]))
+@UseBefore(AuthenticatorMiddleware)
 export class UserController extends GenericController<User, UserFilter> {
 
     /**

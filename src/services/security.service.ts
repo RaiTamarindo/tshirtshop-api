@@ -41,12 +41,13 @@ export class SecurityService {
     public async verifyToken(token: string): Promise<User> {
         return new Promise((resolve: Function, reject: Function) => {
             const options: VerifyOptions = { algorithms: ['HS256'] };
-            const handleVerify = (err: any, accessToken: JWTPayload) => {
+            const handleVerify = (err: any, payload: JWTPayload) => {
                 if (err) {
                     reject(err);
                 } else {
                     const user = new User();
-                    user.id = parseInt(accessToken.sub, 10);
+                    user.id = parseInt(payload.sub, 10);
+                    user.role = payload.role;
                     resolve(user);
                 }
             };
