@@ -18,7 +18,9 @@ export namespace AppConfig {
     export const getDatabase = (): IDatabaseConfig => Config.get('database');
     export const getJWT = (): IJWTConfig => {
         const jwtConfig = Config.get('jwt');
-        jwtConfig.expiration = parseInt(jwtConfig.expiration, 10);
+        if (!!jwtConfig) {
+            jwtConfig.expiration = parseInt(jwtConfig.expiration, 10);
+        }
 
         return jwtConfig;
     };
