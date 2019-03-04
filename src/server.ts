@@ -5,6 +5,7 @@ import {
     Server,
 } from 'http';
 import { createExpressServer } from 'routing-controllers';
+import { UserController } from './controllers';
 import {
     ErrorHandlerMiddleware,
     ServiceNotFoundMiddleware,
@@ -34,7 +35,7 @@ export class ServerApp {
         this.app = createExpressServer({
             defaultErrorHandler: false,
             routePrefix: '/api',
-            controllers: [],
+            controllers: [UserController],
             middlewares: [
                 ServiceNotFoundMiddleware,
                 ErrorHandlerMiddleware,
