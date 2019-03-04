@@ -7,21 +7,10 @@ import {
     OK,
 } from 'http-status';
 import {
-    Delete,
-    Get,
-    Param,
-    Post,
-    Put,
-    Req,
-    Res,
-    UseBefore,
-} from 'routing-controllers';
-import {
     GenericEntity,
     User,
 } from '../entities';
 import { GenericFilter } from '../entities/filters';
-import { entityLoaderMiddleware } from '../middlewares';
 import {
     GenericService,
     IFindResult,
@@ -33,27 +22,37 @@ export interface IAPIRequest extends Request {
 
 }
 
-export interface IEntityRequest<T extends GenericEntity> extends IAPIRequest {
-
-    entity: T;
-
-}
-
 /**
  * Generic entity controller
  */
 export abstract class GenericController<T extends GenericEntity, F extends GenericFilter<T>> {
 
+    public abstract read(req: Request, res: Response, id: number): Promise<Response>;
+
+    public abstract list(req: Request, res: Response, id: number): Promise<Response>;
+
+    public abstract create(req: Request, res: Response, id: number): Promise<Response>;
+
+    public abstract update(req: Request, res: Response, id: number): Promise<Response>;
+
+    public abstract remove(req: Request, res: Response, id: number): Promise<Response>;
+
+    protected abstract getService(): GenericService<T, F>;
+
+    protected abstract getFilterType(): new () => F;
+
     /**
      * Retrieves an entity by its id
      * @param req Http request
      * @param res Http response
+     * @param id Entity id
      */
-    @Get('/:id')
-    @UseBefore(entityLoaderMiddleware(this.getService()))
-    public read(@Req() req: IEntityRequest<T>, @Res() res: Response): Response {
+    protected async defaultRead(req: IAPIRequest, res: Response, id: number): Promise<Response> {
+        const entity: T = await this.getService()
+            .findById(id, req.user);
+
         return res.status(OK)
-            .json(req.entity);
+            .json(entity);
     }
 
     /**
@@ -61,8 +60,7 @@ export abstract class GenericController<T extends GenericEntity, F extends Gener
      * @param req Http request
      * @param res Http response
      */
-    @Get('/')
-    public async list(@Req() req: IAPIRequest, @Res() res: Response): Promise<Response> {
+    protected async defaultList(req: IAPIRequest, res: Response): Promise<Response> {
         const filter: F = GenericFilter.parse<T, F>(this.getFilterType(), req.query);
         const result: IFindResult<T, F> = await this.getService()
             .findAndCount(filter, req.user);
@@ -76,8 +74,7 @@ export abstract class GenericController<T extends GenericEntity, F extends Gener
      * @param req Http request
      * @param res Http response
      */
-    @Post('/')
-    public async create(@Req() req: IAPIRequest, @Res() res: Response): Promise<Response> {
+    protected async defaultCreate(req: IAPIRequest, res: Response): Promise<Response> {
         const createdEntities: T[] = await this.getService()
             .create(req.body, req.user);
 
@@ -91,9 +88,7 @@ export abstract class GenericController<T extends GenericEntity, F extends Gener
      * @param res Http response
      * @param id Entity id
      */
-    @Put('/:id')
-    @UseBefore(entityLoaderMiddleware(this.getService()))
-    public async update(@Req() req: IEntityRequest<T>, @Res() res: Response, @Param('id') id: number): Promise<Response> {
+    protected async defaultUpdate(req: IAPIRequest, res: Response, id: number): Promise<Response> {
         const entity: T = { ...req.body, id: id };
         const updatedEntity: T = await this.getService()
             .update(entity, req.user);
@@ -106,25 +101,16 @@ export abstract class GenericController<T extends GenericEntity, F extends Gener
      * Removes an entity by its id
      * @param req Http request
      * @param res Http response
+     * @param id Entity id
      */
-    @Delete('/:id')
-    @UseBefore(entityLoaderMiddleware(this.getService()))
-    public async remove(@Req() req: IEntityRequest<T>, @Res() res: Response) {
+    protected async defaultRemove(req: IAPIRequest, res: Response, id: number): Promise<Response> {
+        const entity: T = await this.getService()
+            .findById(id);
         await this.getService()
-            .remove(req.entity, req.user);
+            .remove(entity, req.user);
 
         return res.status(OK)
             .send();
     }
-
-    /**
-     * Gets entity service
-     */
-    protected abstract getService(): GenericService<T, F>;
-
-    /**
-     * Gets specific filter constructor
-     */
-    protected abstract getFilterType(): new () => F;
 
 }
