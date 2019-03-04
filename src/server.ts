@@ -32,6 +32,7 @@ export class ServerApp {
 
     private createApp(): void {
         this.app = createExpressServer({
+            defaultErrorHandler: false,
             routePrefix: '/api',
             controllers: [],
             middlewares: [
