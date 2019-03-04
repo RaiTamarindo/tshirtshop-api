@@ -11,6 +11,9 @@ import {
     ServiceNotFoundMiddleware,
     SetupCheckerMiddleware,
 } from './middlewares';
+import { DatabaseConnectionService } from './services';
+import { AppConfig } from './config/app.config';
+import { container } from './inversify.config';
 
 /**
  * Server application class
@@ -21,11 +24,19 @@ export class ServerApp {
     private app: express.Application;
     private http: Server;
     private port: number;
+    private dbConnService: DatabaseConnectionService;
 
-    public start(): void {
+    constructor() {
+        this.dbConnService = container.get<DatabaseConnectionService>(DatabaseConnectionService);
+    }
+
+    public async start(): Promise<void> {
         this.createApp();
         this.setup();
         this.createHTTPServer();
+        if (!!AppConfig.getDatabase()) {
+            await this.dbConnService.connect();
+        }
         this.http.listen(this.port, () => {
             // tslint:disable-next-line:no-console
             console.log('Server running on port %s', this.port);
