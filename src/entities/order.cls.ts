@@ -3,9 +3,10 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Customer } from './customer.cls';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { OrderStatus } from './order-status.enum';
 import { Shipping } from './shipping.cls';
 import { Tax } from './tax.cls';
@@ -14,8 +15,10 @@ import { Tax } from './tax.cls';
  * Order class
  */
 @Entity('order')
-export class Order extends GenericEntity {
+export class Order implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ name: 'total_amount', type: 'decimal', precision: 10, scale: 2 })
     public totalAmount: number;
     @Column({ name: 'created_on', type: 'datetime' })

@@ -3,8 +3,9 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { Order } from './order.cls';
 import { Product } from './product.cls';
 
@@ -12,8 +13,10 @@ import { Product } from './product.cls';
  * Order details class
  */
 @Entity('order_detail')
-export class OrderDetails extends GenericEntity {
+export class OrderDetails implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ type: 'varchar', length: 1000 })
     public attributes: string;
     @Column({ type: 'int' })

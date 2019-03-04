@@ -3,16 +3,19 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { Product } from './product.cls';
 
 /**
  * Shopping cart item class
  */
 @Entity('shopping_cart')
-export class ShoppingCart extends GenericEntity {
+export class ShoppingCart implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ name: 'cart_id', type: 'char', length: 32 })
     public cartId: string;
     @Column({ type: 'varchar', length: 100 })

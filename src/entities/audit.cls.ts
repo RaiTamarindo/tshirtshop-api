@@ -3,16 +3,19 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { Order } from './order.cls';
 
 /**
  * Audit class
  */
 @Entity('audit')
-export class Audit extends GenericEntity {
+export class Audit implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ name: 'created_on', type: 'datetime' })
     public createdOn: Date;
     @Column({ type: 'text' })

@@ -4,8 +4,9 @@ import {
     JoinColumn,
     ManyToOne,
     OneToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { ShippingRegion } from './shipping-region.cls';
 import { User } from './user.cls';
 
@@ -13,8 +14,10 @@ import { User } from './user.cls';
  * Customer class
  */
 @Entity('customer')
-export class Customer extends GenericEntity {
+export class Customer implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ name: 'credit_card', type: 'text', nullable: true })
     public creditCard?: string;
     @Column({ name: 'address_1', type: 'varchar', length: 100, nullable: true })

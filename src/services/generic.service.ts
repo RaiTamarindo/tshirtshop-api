@@ -7,11 +7,11 @@ import {
     UpdateResult,
 } from 'typeorm';
 import { User } from '../entities';
-import { GenericEntity } from '../entities/entity.cls';
+import { IGenericEntity } from '../entities/entity.cls';
 import { GenericFilter } from '../entities/filters/generic.filter';
 import { APIError } from '../helpers/api-error.cls';
 
-export interface IFindResult<T extends GenericEntity, F extends GenericFilter<T>> {
+export interface IFindResult<T extends IGenericEntity, F extends GenericFilter<T>> {
     entities: T[];
     filter: F;
     total: number;
@@ -21,7 +21,7 @@ export interface IFindResult<T extends GenericEntity, F extends GenericFilter<T>
  * Generic service class
  */
 @injectable()
-export abstract class GenericService<T extends GenericEntity, F extends GenericFilter<T>> {
+export abstract class GenericService<T extends IGenericEntity, F extends GenericFilter<T>> {
 
     /**
      * Finds entities by filter. If user is defined, wraps this call with user context.

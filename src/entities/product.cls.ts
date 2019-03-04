@@ -3,17 +3,20 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AttributeValue } from './attribute-value.cls';
 import { Category } from './category.cls';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 
 /**
  * Product class
  */
 @Entity('product')
-export class Product extends GenericEntity {
+export class Product implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ type: 'varchar', length: 100 })
     public name: string;
     @Column({ type: 'varchar', length: 1000 })

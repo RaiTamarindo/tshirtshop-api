@@ -4,13 +4,15 @@ import {
 } from 'express';
 import {
     CREATED,
+    NOT_FOUND,
     OK,
 } from 'http-status';
 import {
-    GenericEntity,
+    IGenericEntity,
     User,
 } from '../entities';
 import { GenericFilter } from '../entities/filters';
+import { APIError } from '../helpers/api-error.cls';
 import {
     GenericService,
     IFindResult,
@@ -25,7 +27,7 @@ export interface IAPIRequest extends Request {
 /**
  * Generic entity controller
  */
-export abstract class GenericController<T extends GenericEntity, F extends GenericFilter<T>> {
+export abstract class GenericController<T extends IGenericEntity, F extends GenericFilter<T>> {
 
     public abstract read(req: Request, res: Response, id: number): Promise<Response>;
 
@@ -50,9 +52,12 @@ export abstract class GenericController<T extends GenericEntity, F extends Gener
     protected async defaultRead(req: IAPIRequest, res: Response, id: number): Promise<Response> {
         const entity: T = await this.getService()
             .findById(id, req.user);
-
-        return res.status(OK)
-            .json(entity);
+        if (!entity) {
+            throw new APIError('Data not found', NOT_FOUND);
+        } else {
+            return res.status(OK)
+                .json(entity);
+        }
     }
 
     /**

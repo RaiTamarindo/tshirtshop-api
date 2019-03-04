@@ -2,18 +2,18 @@ import {
     FindConditions,
     FindManyOptions,
 } from 'typeorm';
-import { GenericEntity } from '../entity.cls';
+import { IGenericEntity } from '../entity.cls';
 
 /**
  * Generic filter class
  */
-export abstract class GenericFilter<T extends GenericEntity> {
+export abstract class GenericFilter<T extends IGenericEntity> {
 
     public page: number;
     public limit: number;
     public sort: { [P in keyof T]: 'ASC' | 'DESC' | 1 | -1 };
 
-    public static parse<T extends GenericEntity, F extends GenericFilter<T>>(
+    public static parse<T extends IGenericEntity, F extends GenericFilter<T>>(
         filterType: new () => F,
         query: any): F {
         const filter = new filterType();

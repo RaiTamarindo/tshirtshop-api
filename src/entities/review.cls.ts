@@ -3,17 +3,20 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Customer } from './customer.cls';
-import { GenericEntity } from './entity.cls';
+import { IGenericEntity } from './entity.cls';
 import { Product } from './product.cls';
 
 /**
  * Review class
  */
 @Entity('review')
-export class Review extends GenericEntity {
+export class Review implements IGenericEntity {
 
+    @PrimaryGeneratedColumn()
+    public id: number;
     @Column({ type: 'text' })
     public review: string;
     @Column({ type: 'smallint' })

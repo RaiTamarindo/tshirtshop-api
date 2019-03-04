@@ -1,11 +1,8 @@
-import { PrimaryGeneratedColumn } from 'typeorm';
-
 /**
- * Generic entity class
+ * Generic entity interface
  */
-export class GenericEntity {
+export interface IGenericEntity {
 
-    @PrimaryGeneratedColumn()
-    public id: number;
+    id: number;
 
 }
