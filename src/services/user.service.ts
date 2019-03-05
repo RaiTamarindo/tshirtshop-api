@@ -22,7 +22,10 @@ import {
     container,
     TYPE,
 } from '../inversify.config';
-import { GenericService } from './generic.service';
+import {
+    GenericService,
+    IFindResult,
+} from './generic.service';
 
 /**
  * User repository class
@@ -35,13 +38,6 @@ export class UserRepository extends BaseRepository<User> { }
  */
 @injectable()
 export class UserService extends GenericService<User, UserFilter> {
-
-    private readonly repository: UserRepository;
-
-    constructor() {
-        super();
-        this.repository = getCustomRepository(UserRepository);
-    }
 
     /**
      * Creates a new user
@@ -110,10 +106,29 @@ export class UserService extends GenericService<User, UserFilter> {
     }
 
     /**
+     * Checks if given email is unique
+     * @param user User data
+     */
+    public async checkUniqueEmail(user: User): Promise<boolean> {
+        const filter: UserFilter = new UserFilter();
+        filter.email = user.email;
+        delete filter.limit;
+
+        const result: IFindResult<User, UserFilter> = await this.findAndCount(filter);
+        for (const u of result.entities) {
+            if (u.email === user.email && u.id !== user.id) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Gets user repository
      */
     protected getRepository(): BaseRepository<User> {
-        return this.repository;
+        return getCustomRepository(UserRepository);
     }
 
     /**
