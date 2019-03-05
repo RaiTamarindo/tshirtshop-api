@@ -8,9 +8,13 @@ import {
 } from 'http-status';
 import { injectable } from 'inversify';
 import {
-    getRepository,
-    Repository,
+    EntityRepository,
+    getCustomRepository,
 } from 'typeorm';
+import {
+    BaseRepository,
+    Transactional,
+} from 'typeorm-transactional-cls-hooked';
 import { User } from '../entities';
 import { UserFilter } from '../entities/filters';
 import { APIError } from '../helpers/api-error.cls';
@@ -21,16 +25,30 @@ import {
 import { GenericService } from './generic.service';
 
 /**
+ * User repository class
+ */
+@EntityRepository(User)
+export class UserRepository extends BaseRepository<User> { }
+
+/**
  * User service class
  */
 @injectable()
 export class UserService extends GenericService<User, UserFilter> {
+
+    private readonly repository: UserRepository;
+
+    constructor() {
+        super();
+        this.repository = getCustomRepository(UserRepository);
+    }
 
     /**
      * Creates a new user
      * @param user User data
      * @param ctxUser User doing operation
      */
+    @Transactional()
     public async create(user: User | User[], ctxUser?: User): Promise<User[]> {
         if (!(user instanceof Array)) {
             user.passwordHash = await this.hashPassword(user);
@@ -46,6 +64,7 @@ export class UserService extends GenericService<User, UserFilter> {
      * @param user User to update
      * @param ctxUser User doing operation
      */
+    @Transactional()
     public update(user: User, ctxUser?: User): Promise<User> {
         delete user.password;
         delete user.passwordHash;
@@ -58,6 +77,7 @@ export class UserService extends GenericService<User, UserFilter> {
      * Update user password
      * @param user User data
      */
+    @Transactional()
     public async updatePassword(user: User): Promise<User> {
         const passwordHash: string = await this.hashPassword(user);
         const u = new User();
@@ -77,20 +97,23 @@ export class UserService extends GenericService<User, UserFilter> {
         const filter = new UserFilter();
         filter.email = email;
         const user = await this.findOne(filter);
-        if (!!user) {
-            await compare(password, user.passwordHash);
-
-            return user;
+        if (!user) {
+            throw new APIError('Could not authenticate user.', UNAUTHORIZED);
+        } else {
+            const passwordsMatch: boolean = await compare(password, user.passwordHash);
+            if (passwordsMatch) {
+                return user;
+            } else {
+                throw new APIError('Wrong password or email.', UNAUTHORIZED);
+            }
         }
-
-        return Promise.reject(new APIError('Could not authenticate user.', UNAUTHORIZED));
     }
 
     /**
      * Gets user repository
      */
-    protected getRepository(): Repository<User> {
-        return getRepository(User);
+    protected getRepository(): BaseRepository<User> {
+        return this.repository;
     }
 
     /**

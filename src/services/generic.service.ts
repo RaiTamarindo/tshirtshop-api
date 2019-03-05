@@ -2,10 +2,12 @@ import { UNAUTHORIZED } from 'http-status';
 import { injectable } from 'inversify';
 import {
     InsertResult,
-    Repository,
-    Transaction,
     UpdateResult,
 } from 'typeorm';
+import {
+    BaseRepository,
+    Transactional,
+} from 'typeorm-transactional-cls-hooked';
 import { User } from '../entities';
 import { IGenericEntity } from '../entities/entity.cls';
 import { GenericFilter } from '../entities/filters/generic.filter';
@@ -71,7 +73,7 @@ export abstract class GenericService<T extends IGenericEntity, F extends Generic
      * @param entity Entity to persist
      * @param user Context user
      */
-    @Transaction()
+    @Transactional()
     public async create(entity: T | T[], user?: User): Promise<T[]> {
         await (!user ? Promise.resolve() : this.wrapContext(user, entity));
         const e: any = entity instanceof Array ? [].concat(entity) : { ...entity };
@@ -86,7 +88,7 @@ export abstract class GenericService<T extends IGenericEntity, F extends Generic
      * @param entity Entity or entities to create/update
      * @param user Context user
      */
-    @Transaction()
+    @Transactional()
     public async createOrUpdate(entity: T | T[], user?: User): Promise<T[]> {
         const entitiesCreate: T[] = (entity instanceof Array ? entity : [entity])
             .filter((e: T) => !e.id);
@@ -103,7 +105,7 @@ export abstract class GenericService<T extends IGenericEntity, F extends Generic
      * @param entity Entity to update
      * @param user Context user
      */
-    @Transaction()
+    @Transactional()
     public async update(entity: T, user?: User): Promise<T> {
         await (!user ? Promise.resolve() : this.wrapContext(user, entity));
         const e: any = { ...entity };
@@ -118,7 +120,7 @@ export abstract class GenericService<T extends IGenericEntity, F extends Generic
      * @param entity Entity or entities to remove
      * @param user Context user
      */
-    @Transaction()
+    @Transactional()
     public async remove(entity: T | T[], user?: User): Promise<T[]> {
         const e: T[] = entity instanceof Array ? entity : [entity];
         await (!user ? Promise.resolve() : this.wrapContext(user, entity));
@@ -168,6 +170,6 @@ export abstract class GenericService<T extends IGenericEntity, F extends Generic
     /**
      * Gets entity repository
      */
-    protected abstract getRepository(): Repository<T>;
+    protected abstract getRepository(): BaseRepository<T>;
 
 }
