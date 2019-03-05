@@ -5,15 +5,17 @@ import {
     Server,
 } from 'http';
 import { createExpressServer } from 'routing-controllers';
-import { UserController } from './controllers';
+import { AppConfig } from './config/app.config';
+import {
+    UserController,
+} from './controllers';
+import { container } from './inversify.config';
 import {
     ErrorHandlerMiddleware,
     ServiceNotFoundMiddleware,
     SetupCheckerMiddleware,
 } from './middlewares';
 import { DatabaseConnectionService } from './services';
-import { AppConfig } from './config/app.config';
-import { container } from './inversify.config';
 
 /**
  * Server application class
@@ -24,7 +26,7 @@ export class ServerApp {
     private app: express.Application;
     private http: Server;
     private port: number;
-    private dbConnService: DatabaseConnectionService;
+    private readonly dbConnService: DatabaseConnectionService;
 
     constructor() {
         this.dbConnService = container.get<DatabaseConnectionService>(DatabaseConnectionService);
@@ -47,15 +49,17 @@ export class ServerApp {
         this.app = createExpressServer({
             defaultErrorHandler: false,
             routePrefix: '/api',
-            controllers: [UserController],
+            controllers: [
+                UserController,
+            ],
             middlewares: [
+                bodyParser.urlencoded({ extended: true }),
+                bodyParser.json(),
                 SetupCheckerMiddleware,
                 ServiceNotFoundMiddleware,
                 ErrorHandlerMiddleware,
             ],
         });
-        this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(bodyParser.json());
     }
 
     private createHTTPServer(): void {

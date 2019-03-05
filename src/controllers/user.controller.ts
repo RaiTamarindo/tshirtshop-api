@@ -1,8 +1,9 @@
 import { Response } from 'express';
 import {
-    Controller,
+    Body,
     Delete,
     Get,
+    JsonController,
     Param,
     Post,
     Put,
@@ -29,7 +30,7 @@ import {
 /**
  * User controller class
  */
-@Controller('/users')
+@JsonController('/users')
 @UseBefore(authorizerMiddleWare([UserRole.ADMIN]))
 @UseBefore(AuthenticatorMiddleware)
 export class UserController extends GenericController<User, UserFilter> {
@@ -61,8 +62,8 @@ export class UserController extends GenericController<User, UserFilter> {
      * @param res Http response
      */
     @Post('/')
-    public create(@Req() req: IAPIRequest, @Res() res: Response): Promise<Response> {
-        return super.defaultCreate(req, res);
+    public create(@Req() req: IAPIRequest, @Res() res: Response, @Body() user: User): Promise<Response> {
+        return super.defaultCreate(req, res, user);
     }
 
     /**
@@ -72,8 +73,8 @@ export class UserController extends GenericController<User, UserFilter> {
      * @param id User id
      */
     @Put('/:id')
-    public update(@Req() req: IAPIRequest, @Res() res: Response, @Param('id') id: number): Promise<Response> {
-        return super.defaultUpdate(req, res, id);
+    public update(@Req() req: IAPIRequest, @Res() res: Response, @Param('id') id: number, @Body() user: User): Promise<Response> {
+        return super.defaultUpdate(req, res, id, user);
     }
 
     /**

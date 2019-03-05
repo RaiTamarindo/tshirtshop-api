@@ -29,15 +29,15 @@ export interface IAPIRequest extends Request {
  */
 export abstract class GenericController<T extends IGenericEntity, F extends GenericFilter<T>> {
 
-    public abstract read(req: Request, res: Response, id: number): Promise<Response>;
+    public abstract read(req: IAPIRequest, res: Response, id: number): Promise<Response>;
 
-    public abstract list(req: Request, res: Response, id: number): Promise<Response>;
+    public abstract list(req: IAPIRequest, res: Response): Promise<Response>;
 
-    public abstract create(req: Request, res: Response, id: number): Promise<Response>;
+    public abstract create(req: IAPIRequest, res: Response, entity: T): Promise<Response>;
 
-    public abstract update(req: Request, res: Response, id: number): Promise<Response>;
+    public abstract update(req: IAPIRequest, res: Response, id: number, entity: T): Promise<Response>;
 
-    public abstract remove(req: Request, res: Response, id: number): Promise<Response>;
+    public abstract remove(req: IAPIRequest, res: Response, id: number): Promise<Response>;
 
     protected abstract getService(): GenericService<T, F>;
 
@@ -79,9 +79,9 @@ export abstract class GenericController<T extends IGenericEntity, F extends Gene
      * @param req Http request
      * @param res Http response
      */
-    protected async defaultCreate(req: IAPIRequest, res: Response): Promise<Response> {
+    protected async defaultCreate(req: IAPIRequest, res: Response, entity: T | T[]): Promise<Response> {
         const createdEntities: T[] = await this.getService()
-            .create(req.body, req.user);
+            .create(entity, req.user);
 
         return res.status(CREATED)
             .json(createdEntities);
@@ -93,10 +93,9 @@ export abstract class GenericController<T extends IGenericEntity, F extends Gene
      * @param res Http response
      * @param id Entity id
      */
-    protected async defaultUpdate(req: IAPIRequest, res: Response, id: number): Promise<Response> {
-        const entity: T = { ...req.body, id: id };
+    protected async defaultUpdate(req: IAPIRequest, res: Response, id: number, entity: T): Promise<Response> {
         const updatedEntity: T = await this.getService()
-            .update(entity, req.user);
+            .update({ ...entity, id: id }, req.user);
 
         return res.status(OK)
             .json(updatedEntity);
