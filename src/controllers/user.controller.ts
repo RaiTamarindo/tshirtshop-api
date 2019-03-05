@@ -20,6 +20,7 @@ import { container } from '../inversify.config';
 import {
     AuthenticatorMiddleware,
     authorizerMiddleWare,
+    userValidator,
 } from '../middlewares';
 import { UserService } from '../services';
 import {
@@ -62,6 +63,7 @@ export class UserController extends GenericController<User, UserFilter> {
      * @param res Http response
      */
     @Post('/')
+    @UseBefore(...userValidator())
     public create(@Req() req: IAPIRequest, @Res() res: Response, @Body() user: User): Promise<Response> {
         return super.defaultCreate(req, res, user);
     }
@@ -73,6 +75,7 @@ export class UserController extends GenericController<User, UserFilter> {
      * @param id User id
      */
     @Put('/:id')
+    @UseBefore(...userValidator())
     public update(@Req() req: IAPIRequest, @Res() res: Response, @Param('id') id: number, @Body() user: User): Promise<Response> {
         return super.defaultUpdate(req, res, id, user);
     }
