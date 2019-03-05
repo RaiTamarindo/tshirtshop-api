@@ -6,7 +6,11 @@ import {
     verify,
     VerifyOptions,
 } from 'jsonwebtoken';
-import { AppConfig, IJWTConfig } from '../config/app.config';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
+import {
+    AppConfig,
+    IJWTConfig,
+} from '../config/app.config';
 import { JWTPayload } from '../entities/dto/jwt-payload.cls';
 import { User } from '../entities/user.cls';
 import { container, TYPE } from '../inversify.config';
@@ -71,6 +75,7 @@ export class SecurityService {
      * Facade for user service updatePssword method
      * @param user User data
      */
+    @Transactional()
     public async updatePassword(user: User): Promise<string> {
         const u: User = await this.userService.updatePassword(user);
 
