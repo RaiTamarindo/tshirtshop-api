@@ -26,4 +26,13 @@ export class User implements IGenericEntity {
     @Column({ type: 'int', nullable: true })
     public role?: UserRole;
 
+    public toJSON() {
+        const user = { ...this };
+        delete user.password;
+        delete user.passwordChangedOn;
+        delete user.passwordHash;
+
+        return user;
+    }
+
 }
