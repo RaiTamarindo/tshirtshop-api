@@ -46,13 +46,13 @@ export class UserService extends GenericService<User, UserFilter> {
      */
     @Transactional()
     public async create(user: User | User[], ctxUser?: User): Promise<User[]> {
-        if (!(user instanceof Array)) {
+        if (user instanceof Array) {
+            throw new APIError('Its possible create only one user at once.', BAD_REQUEST);
+        } else {
             user.passwordHash = await this.hashPassword(user);
 
             return super.create(user, ctxUser);
         }
-
-        return Promise.reject(new APIError('Its possible create only one user at once.', BAD_REQUEST));
     }
 
     /**
