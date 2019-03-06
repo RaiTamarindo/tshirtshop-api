@@ -38,10 +38,10 @@ export class Customer implements IGenericEntity {
     public eveninigPhone?: string;
     @Column({ name: 'mob_phone', type: 'varchar', length: 100, nullable: true })
     public mobilePhone?: string;
-    @OneToOne(() => User)
+    @OneToOne(() => User, { eager: true })
     @JoinColumn({ name: 'user_id' })
-    public user: User;
-    @ManyToOne(() => ShippingRegion)
+    public userData: User;
+    @ManyToOne(() => ShippingRegion, { eager: true })
     @JoinColumn({ name: 'shipping_region_id' })
     public shippingRegion: ShippingRegion;
 

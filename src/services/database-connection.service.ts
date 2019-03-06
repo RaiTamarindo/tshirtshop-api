@@ -8,7 +8,11 @@ import {
     AppConfig,
     IDatabaseConfig,
 } from '../config/app.config';
-import { User } from '../entities';
+import {
+    Customer,
+    ShippingRegion,
+    User,
+} from '../entities';
 import { container } from '../inversify.config';
 
 /**
@@ -28,6 +32,8 @@ export class DatabaseConnectionService {
                 password: config.password,
                 database: config.database,
                 entities: [
+                    Customer,
+                    ShippingRegion,
                     User,
                 ],
             });

@@ -8,6 +8,7 @@ import { createExpressServer } from 'routing-controllers';
 import { AppConfig } from './config/app.config';
 import {
     AccessControlController,
+    CustomerController,
     UserController,
 } from './controllers';
 import { container } from './inversify.config';
@@ -52,6 +53,7 @@ export class ServerApp {
             routePrefix: '/api',
             controllers: [
                 AccessControlController,
+                CustomerController,
                 UserController,
             ],
             middlewares: [
